@@ -1,0 +1,41 @@
+package compressor.encoders
+
+import compressor.*
+import kotlin.math.abs
+
+public class ShannonFanoEncoder<T> : Encoder<Collection<T>, T> {
+
+    override fun encode(message: Collection<T>): Map<T, BinaryCode> {
+        val (countedSymbols, _) = message.toMsgInfo()
+        val (sortedSymbols, sortedCounters) = countedSymbols.toList().sortedByDescending { it.second }.unzip()
+
+        val codes = MutableList(size = countedSymbols.size) { BinaryCode.EMPTY }
+
+        fun IntRange.encodeSubTrees() {
+            val size = last - first + 1
+
+            if (size == 1) return
+
+            val subList = sortedCounters.slice(indices = this)
+
+            val sum = subList.sum()
+
+            val dividerIndex = first + subList.runningFold(initial = 0) { rSum, cnt -> cnt + rSum }.map {
+                abs(sum - it * 2)
+            }.withIndex().minByOrNull { it.value }!!.index
+
+            val halves = listOf(first until dividerIndex, dividerIndex..last)
+
+            for ((i, half) in halves.withIndex()) {
+                for (j in half) {
+                    codes[j] = codes[j] + BinSym.values()[i]
+                }
+                half.encodeSubTrees()
+            }
+        }
+
+        sortedCounters.indices.encodeSubTrees()
+
+        return (sortedSymbols zip codes).toMap()
+    }
+}
