@@ -45,18 +45,18 @@ private fun <T> HuffmanElement<T>.buildCodes(): Map<T, BinaryCode> {
     val nodesToCodes = mutableMapOf(symbol to BinaryCode.EMPTY)
     val leavesToCodes = mutableMapOf<T, BinaryCode>()
 
-    fun HuffmanElement<T>.encodeSubTree() {
+    fun HuffmanElement<T>.encodeSubTrees() {
         if (children != null) {
             for ((i, child) in children.toList().withIndex()) {
                 nodesToCodes[child.symbol] = nodesToCodes.getValue(symbol) + BinSym.values()[i]
-                child.encodeSubTree()
+                child.encodeSubTrees()
             }
         } else {
             leavesToCodes[symbol.first()] = nodesToCodes.getValue(symbol)
         }
     }
 
-    encodeSubTree()
+    encodeSubTrees()
 
     return leavesToCodes
 }
