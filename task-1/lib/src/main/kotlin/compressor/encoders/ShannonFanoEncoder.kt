@@ -5,11 +5,11 @@ import kotlin.math.abs
 
 public class ShannonFanoEncoder<T> : Encoder<Collection<T>, T> {
 
-    override fun encode(message: Collection<T>): Map<T, BinaryCode> {
+    override fun encode(message: Collection<T>): Map<T, Code> {
         val (countedSymbols, _) = message.toMsgInfo()
         val (sortedSymbols, sortedCounters) = countedSymbols.toList().sortedByDescending { it.second }.unzip()
 
-        val codes = MutableList(size = countedSymbols.size) { BinaryCode.EMPTY }
+        val codes = MutableList(size = countedSymbols.size) { Code.EMPTY }
 
         fun IntRange.encodeSubTrees() {
             val size = last - first + 1
@@ -28,7 +28,7 @@ public class ShannonFanoEncoder<T> : Encoder<Collection<T>, T> {
 
             for ((i, half) in halves.withIndex()) {
                 for (j in half) {
-                    codes[j] = codes[j] + BinSym.values()[i]
+                    codes[j] = codes[j] + i.toBit()
                 }
                 half.encodeSubTrees()
             }

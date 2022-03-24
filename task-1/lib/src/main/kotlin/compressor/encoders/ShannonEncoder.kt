@@ -6,7 +6,7 @@ import kotlin.math.log2
 
 public class ShannonEncoder<T> : Encoder<Collection<T>, T> {
 
-    override fun encode(message: Collection<T>): Map<T, BinaryCode> {
+    override fun encode(message: Collection<T>): Map<T, Code> {
         val (countedSymbols, len) = message.toMsgInfo()
         val (sortedSymbols, sortedCounters) = countedSymbols.toList().sortedByDescending { it.second }.unzip()
 
@@ -19,18 +19,14 @@ public class ShannonEncoder<T> : Encoder<Collection<T>, T> {
         }
 
         val codes = (codesLengths zip sumsOfPrevPrs).map { (codeLen, sumOfPrevPrs) ->
-            val binSymbols = buildList {
+            buildList {
                 var x = sumOfPrevPrs
                 repeat(codeLen) {
                     x *= 2
                     add(x.toInt())
                     x -= x.toInt()
                 }
-            }.map {
-                BinSym.values()[it]
-            }
-
-            BinaryCode(binSymbols)
+            }.map(Int::toBit).run(::Code)
         }
 
         return (sortedSymbols zip codes).toMap()

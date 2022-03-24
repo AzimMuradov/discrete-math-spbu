@@ -5,24 +5,24 @@ import java.util.*
 
 public class HuffmanEncoder<T> : Encoder<Collection<T>, T> {
 
-    override fun encode(message: Collection<T>): Map<T, BinaryCode> {
+    override fun encode(message: Collection<T>): Map<T, Code> {
         val (countedSymbols, _) = message.toMsgInfo()
-        val elements = countedSymbols.map { (symbol, count) ->
-            HuffmanElement(
+        val nodes = countedSymbols.map { (symbol, count) ->
+            Node(
                 symbol = listOf(symbol),
                 children = null,
                 count = count
             )
         }
 
-        val queue = PriorityQueue(compareBy(HuffmanElement<T>::count)).apply {
-            addAll(elements)
+        val queue = PriorityQueue(compareBy(Node<T>::count)).apply {
+            addAll(nodes)
         }
 
         while (queue.size != 1) {
             val a = queue.poll()
             val b = queue.poll()
-            val ab = HuffmanElement(
+            val ab = Node(
                 symbol = a.symbol + b.symbol,
                 children = a to b,
                 count = a.count + b.count
@@ -32,31 +32,31 @@ public class HuffmanEncoder<T> : Encoder<Collection<T>, T> {
 
         return queue.poll().buildCodes()
     }
-}
 
 
-private data class HuffmanElement<T>(
-    val symbol: List<T>,
-    val children: Pair<HuffmanElement<T>, HuffmanElement<T>>?,
-    val count: Int,
-)
+    private data class Node<T>(
+        val symbol: List<T>,
+        val children: Pair<Node<T>, Node<T>>?,
+        val count: Int,
+    )
 
-private fun <T> HuffmanElement<T>.buildCodes(): Map<T, BinaryCode> {
-    val nodesToCodes = mutableMapOf(symbol to BinaryCode.EMPTY)
-    val leavesToCodes = mutableMapOf<T, BinaryCode>()
+    private fun <T> Node<T>.buildCodes(): Map<T, Code> {
+        val nodesToCodes = mutableMapOf(symbol to Code.EMPTY)
+        val leavesToCodes = mutableMapOf<T, Code>()
 
-    fun HuffmanElement<T>.encodeSubTrees() {
-        if (children != null) {
-            for ((i, child) in children.toList().withIndex()) {
-                nodesToCodes[child.symbol] = nodesToCodes.getValue(symbol) + BinSym.values()[i]
-                child.encodeSubTrees()
+        fun Node<T>.encodeSubTrees() {
+            if (children != null) {
+                for ((i, child) in children.toList().withIndex()) {
+                    nodesToCodes[child.symbol] = nodesToCodes.getValue(symbol) + i.toBit()
+                    child.encodeSubTrees()
+                }
+            } else {
+                leavesToCodes[symbol.first()] = nodesToCodes.getValue(symbol)
             }
-        } else {
-            leavesToCodes[symbol.first()] = nodesToCodes.getValue(symbol)
         }
+
+        encodeSubTrees()
+
+        return leavesToCodes
     }
-
-    encodeSubTrees()
-
-    return leavesToCodes
 }
