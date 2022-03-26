@@ -7,7 +7,7 @@ import kotlin.math.log2
 public class ShannonEncoder<T> : Encoder<Collection<T>, T> {
 
     override fun encodeSymbolsOf(message: Collection<T>): Map<T, Code> {
-        val (countedSymbols, len) = message.toMsgInfo()
+        val (countedSymbols, len) = message.toMessageInfo()
         val (sortedSymbols, sortedCounters) = countedSymbols.toList().sortedByDescending { it.second }.unzip()
 
         val codesLengths = sortedCounters.map {

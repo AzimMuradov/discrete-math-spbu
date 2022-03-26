@@ -6,7 +6,7 @@ import kotlin.math.abs
 public class ShannonFanoEncoder<T> : Encoder<Collection<T>, T> {
 
     override fun encodeSymbolsOf(message: Collection<T>): Map<T, Code> {
-        val (countedSymbols, _) = message.toMsgInfo()
+        val (countedSymbols, _) = message.toMessageInfo()
         val (sortedSymbols, sortedCounters) = countedSymbols.toList().sortedByDescending { it.second }.unzip()
 
         val codes = MutableList(size = countedSymbols.size) { Code.EMPTY }

@@ -1,12 +1,12 @@
 package compressor
 
-public data class MsgInfo<T>(
+public data class MessageInfo<T>(
     public val countedSymbols: Map<T, Int>,
     public val messageLength: Int,
 )
 
 
-public fun <T> Collection<T>.toMsgInfo(): MsgInfo<T> = MsgInfo(
+public fun <T> Collection<T>.toMessageInfo(): MessageInfo<T> = MessageInfo(
     countedSymbols = groupingBy { it }.eachCount(),
     messageLength = size
 )

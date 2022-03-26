@@ -6,7 +6,7 @@ import java.util.*
 public class HuffmanEncoder<T> : Encoder<Collection<T>, T> {
 
     override fun encodeSymbolsOf(message: Collection<T>): Map<T, Code> {
-        val (countedSymbols, _) = message.toMsgInfo()
+        val (countedSymbols, _) = message.toMessageInfo()
         val nodes = countedSymbols.map { (symbol, count) ->
             Node(
                 symbol = listOf(symbol),
