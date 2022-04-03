@@ -15,6 +15,10 @@ public fun Code.toByteList(): List<Byte> = bits.chunked(size = 8).map {
     it.joinToString(separator = "").padEnd(length = 8, padChar = '0').toUByte(radix = 2).toByte()
 }
 
+public fun Iterable<Byte>.toCode(length: Int): Code = joinToString(separator = "") {
+    it.toUByte().toString(radix = 2).padStart(length = 8, padChar = '0')
+}.take(length).map { it.digitToInt().toBit() }.run(::Code)
+
 
 public enum class Bit(public val int: Int) {
     ZERO(int = 0),
