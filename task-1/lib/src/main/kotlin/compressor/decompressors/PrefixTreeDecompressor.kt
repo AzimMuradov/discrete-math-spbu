@@ -3,9 +3,9 @@ package compressor.decompressors
 import compressor.*
 import compressor.compressors.EncoderBasedCompressor.Metadata
 
-public class PrefixTreeDecompressor<T> : Decompressor<List<T>, T, Collection<Byte>, Metadata<T>> {
+public class PrefixTreeDecompressor<T> : Decompressor<List<T>, T, List<Byte>, Metadata<T>> {
 
-    override fun decompress(compressedMessage: CompressedMessage<Collection<Byte>, Metadata<T>>): List<T> {
+    override fun decompress(compressedMessage: CompressedMessage<List<Byte>, Metadata<T>>): List<T> {
         val (compressed, metadata) = compressedMessage
         val compressedBits = compressed.toCode(metadata.length)
         val codes = metadata.codes

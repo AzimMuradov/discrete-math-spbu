@@ -6,9 +6,9 @@ import java.math.*
 import kotlin.math.ceil
 import kotlin.math.log2
 
-public class ArithmeticCompressor<I : Collection<T>, T : Comparable<T>> : Compressor<I, T, Collection<Byte>, Metadata> {
+public class ArithmeticCompressor<T : Comparable<T>> : Compressor<List<T>, T, List<Byte>, Metadata> {
 
-    override fun compress(message: I): CompressedMessage<Collection<Byte>, Metadata> {
+    override fun compress(message: List<T>): CompressedMessage<List<Byte>, Metadata> {
         val (_, messageLength) = message.toMessageInfo()
         val codedSegment = getIntegerSegmentCode(message)
         val bits = getBinCode(messageLength, codedSegment)
@@ -20,7 +20,7 @@ public class ArithmeticCompressor<I : Collection<T>, T : Comparable<T>> : Compre
     }
 
 
-    private fun getIntegerSegmentCode(message: I): Segment<BigInteger> {
+    private fun getIntegerSegmentCode(message: List<T>): Segment<BigInteger> {
         val (countedSymbols, messageLength) = message.toMessageInfo()
 
         val (symbols, counts) = countedSymbols.toSortedMap().toList().unzip()

@@ -1,20 +1,17 @@
 package compressor
 
-public interface Encoder<in I : Iterable<T>, T> {
+public interface Encoder<T> {
 
-    public fun encodeSymbolsOf(message: I): Map<T, Code>
+    public fun encodeSymbolsOf(message: List<T>): Map<T, Code>
 
 
     public companion object
 }
 
-public fun <I : Iterable<T>, T> Encoder<I, T>.encode(message: I): EncodedMessage<T> =
+public fun <T> Encoder<T>.encode(message: List<T>): EncodedMessage<T> =
     Encoder.encode(message, codes = encodeSymbolsOf(message))
 
-public fun <I : Iterable<T>, T> Encoder.Companion.encode(
-    message: I,
-    codes: Map<T, Code>,
-): EncodedMessage<T> = EncodedMessage(
+public fun <T> Encoder.Companion.encode(message: List<T>, codes: Map<T, Code>): EncodedMessage<T> = EncodedMessage(
     encoded = message.flatMap { codes.getValue(it).bits }.run(::Code),
     codes = codes
 )

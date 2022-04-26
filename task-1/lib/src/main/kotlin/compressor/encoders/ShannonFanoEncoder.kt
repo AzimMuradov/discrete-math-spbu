@@ -3,9 +3,9 @@ package compressor.encoders
 import compressor.*
 import kotlin.math.abs
 
-public class ShannonFanoEncoder<T> : Encoder<Collection<T>, T> {
+public class ShannonFanoEncoder<T> : Encoder<T> {
 
-    override fun encodeSymbolsOf(message: Collection<T>): Map<T, Code> {
+    override fun encodeSymbolsOf(message: List<T>): Map<T, Code> {
         val (countedSymbols, _) = message.toMessageInfo()
         val (sortedSymbols, sortedCounters) = countedSymbols.toList().sortedByDescending { it.second }.unzip()
 
