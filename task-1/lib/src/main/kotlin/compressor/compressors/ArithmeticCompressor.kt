@@ -6,16 +6,16 @@ import java.math.*
 import kotlin.math.ceil
 import kotlin.math.log2
 
-public class ArithmeticCompressor<T : Comparable<T>> : Compressor<List<T>, T, List<Byte>, Metadata> {
+public class ArithmeticCompressor<T : Comparable<T>> : Compressor<List<T>, T, List<Byte>, Metadata<T>> {
 
-    override fun compress(message: List<T>): CompressedMessage<List<Byte>, Metadata> {
-        val (_, messageLength) = message.toMessageInfo()
+    override fun compress(message: List<T>): CompressedMessage<List<Byte>, Metadata<T>> {
+        val messageInfo = message.toMessageInfo()
         val codedSegment = getIntegerSegmentCode(message)
-        val bits = getBinCode(messageLength, codedSegment)
+        val bits = getBinCode(messageInfo.messageLength, codedSegment)
 
         return CompressedMessage(
             compressed = Code(bits).toByteList(),
-            metadata = Metadata(messageLength, compressedBitsLength = bits.size)
+            metadata = Metadata(messageInfo = messageInfo, compressedBitsLength = bits.size)
         )
     }
 
@@ -32,9 +32,7 @@ public class ArithmeticCompressor<T : Comparable<T>> : Compressor<List<T>, T, Li
             return bigIntegerCounts
                 .runningFold(initial = BigInteger.ZERO) { acc, c -> acc + c }
                 .zipWithNext()
-                .map { (lI, rI) ->
-                    Segment(l * normalizer + lI * unit, l * normalizer + rI * unit)
-                }
+                .map { (lI, rI) -> Segment(l = l * normalizer + lI * unit, r = l * normalizer + rI * unit) }
         }
 
         return message.fold(initial = Segment(l = BigInteger.ZERO, r = BigInteger.ONE)) { acc, s ->
@@ -77,8 +75,8 @@ public class ArithmeticCompressor<T : Comparable<T>> : Compressor<List<T>, T, Li
     }
 
 
-    public data class Metadata(
-        val messageLength: Int,
+    public data class Metadata<T>(
+        val messageInfo: MessageInfo<T>,
         val compressedBitsLength: Int,
     )
 
