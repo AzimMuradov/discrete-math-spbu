@@ -17,7 +17,7 @@ public fun Code.toByteList(): List<Byte> = bits.chunked(size = 8).map {
 
 public fun Iterable<Byte>.toCode(length: Int): Code = joinToString(separator = "") {
     it.toUByte().toString(radix = 2).padStart(length = 8, padChar = '0')
-}.take(length).map { it.digitToInt().toBit() }.run(::Code)
+}.take(length).toCode()
 
 
 public enum class Bit(public val int: Int) {
@@ -26,6 +26,8 @@ public enum class Bit(public val int: Int) {
 
     override fun toString(): String = "$int"
 }
+
+public fun String.toCode(): Code = Code(map { it.digitToInt().toBit() })
 
 public fun Bit.toBoolean(): Boolean = int % 2 != 0
 

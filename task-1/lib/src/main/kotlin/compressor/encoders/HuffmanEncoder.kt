@@ -1,62 +1,12 @@
 package compressor.encoders
 
 import compressor.*
-import java.util.*
+import compressor.utils.HuffmanTreeBuilder
+import compressor.utils.buildCodes
 
-public class HuffmanEncoder<T> : Encoder<T> {
+public class HuffmanEncoder<T : Comparable<T>> : Encoder<T> {
 
-    override fun encodeSymbolsOf(message: List<T>): Map<T, Code> {
-        val (countedSymbols, _) = message.toMessageInfo()
-        val nodes = countedSymbols.map { (symbol, count) ->
-            Node(
-                symbol = listOf(symbol),
-                children = null,
-                count = count
-            )
-        }
-
-        val queue = PriorityQueue(compareBy(Node<T>::count)).apply {
-            addAll(nodes)
-        }
-
-        while (queue.size != 1) {
-            val a = queue.poll()
-            val b = queue.poll()
-            val ab = Node(
-                symbol = a.symbol + b.symbol,
-                children = a to b,
-                count = a.count + b.count
-            )
-            queue.add(ab)
-        }
-
-        return queue.poll().buildCodes()
-    }
-
-
-    private data class Node<T>(
-        val symbol: List<T>,
-        val children: Pair<Node<T>, Node<T>>?,
-        val count: Int,
-    )
-
-    private fun <T> Node<T>.buildCodes(): Map<T, Code> {
-        val nodesToCodes = mutableMapOf(symbol to Code.EMPTY)
-        val leavesToCodes = mutableMapOf<T, Code>()
-
-        fun Node<T>.encodeSubTrees() {
-            if (children != null) {
-                for ((i, child) in children.toList().withIndex()) {
-                    nodesToCodes[child.symbol] = nodesToCodes.getValue(symbol) + i.toBit()
-                    child.encodeSubTrees()
-                }
-            } else {
-                leavesToCodes[symbol.first()] = nodesToCodes.getValue(symbol)
-            }
-        }
-
-        encodeSubTrees()
-
-        return leavesToCodes
-    }
+    override fun encodeSymbolsOf(message: List<T>): Map<T, Code> = HuffmanTreeBuilder<T>()
+        .buildTree(message.toMessageInfo().countedSymbols)
+        .buildCodes()
 }
