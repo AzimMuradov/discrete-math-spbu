@@ -16,7 +16,7 @@ internal class SegmentTest {
         assertTrue(4 in segment)
         assertTrue(5 in segment)
         assertTrue(6 in segment)
-        assertTrue(7 in segment)
+        assertFalse(7 in segment)
         assertFalse(8 in segment)
         assertFalse(168 in segment)
     }

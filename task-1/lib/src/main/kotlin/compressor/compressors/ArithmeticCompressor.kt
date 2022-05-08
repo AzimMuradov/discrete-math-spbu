@@ -61,8 +61,8 @@ public class ArithmeticCompressor<T : Comparable<T>> : Compressor<T, Metadata<T>
         fun Segment<BigDecimal>.middle() = (l + r).divide(2.toBigDecimal(), scale, RoundingMode.HALF_EVEN)
 
         val binaryCodeSegment = generateSequence(seed = Segment(BigDecimal.ZERO, BigDecimal.ONE)) { seg ->
-            if (seg.middle() !in codeSegment) {
-                val m = seg.middle()
+            val m = seg.middle()
+            if (m !in codeSegment) {
                 val (leftSeg, rightSeg) = Segment(seg.l, m) to Segment(m, seg.r)
 
                 if (codeSegment.r in leftSeg) leftSeg else rightSeg
