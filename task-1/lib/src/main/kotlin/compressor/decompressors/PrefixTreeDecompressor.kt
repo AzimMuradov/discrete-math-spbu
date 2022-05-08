@@ -1,28 +1,35 @@
 package compressor.decompressors
 
-import compressor.*
-import compressor.compressors.EncoderBasedCompressor.Metadata
+import compressor.CompressedMessage
+import compressor.Decompressor
+import compressor.compressors.EncoderBasedCompressor
+import compressor.utils.Bit
+import compressor.utils.Bits
 
-public class PrefixTreeDecompressor<T> : Decompressor<List<T>, T, List<Byte>, Metadata<T>> {
+/**
+ * Decompressor that relies on the prefix property of the [given codes][EncoderBasedCompressor.Metadata.codes].
+ */
+public class PrefixTreeDecompressor<T> : Decompressor<T, EncoderBasedCompressor.Metadata<T>> {
 
-    override fun decompress(compressedMessage: CompressedMessage<List<Byte>, Metadata<T>>): List<T> {
+    override fun decompress(compressedMessage: CompressedMessage<EncoderBasedCompressor.Metadata<T>>): List<T> {
         val (compressed, metadata) = compressedMessage
-        val compressedBits = compressed.toCode(metadata.length)
         val codes = metadata.codes
 
         val prefixTree = checkNotNull(codes.prefixTreeOrNull())
 
         return buildList {
             var i = 0
-            while (i < compressedBits.bits.size) {
+            while (i < compressed.size) {
                 var node = prefixTree
                 while (true) {
                     when (node) {
                         is Node.InternalNode -> {
-                            check(i < compressedBits.bits.size)
-                            node = when (compressedBits.bits[i]) {
-                                Bit.ZERO -> node.children.first ?: error("")
-                                Bit.ONE -> node.children.second ?: error("")
+                            check(i < compressed.size)
+                            node = when (compressed[i]) {
+                                Bit.ZERO -> node.children.first
+                                    ?: error("Fail to decompress message, not a prefix tree.")
+                                Bit.ONE -> node.children.second
+                                    ?: error("Fail to decompress message, not a prefix tree.")
                             }
                             i++
                         }
@@ -37,14 +44,14 @@ public class PrefixTreeDecompressor<T> : Decompressor<List<T>, T, List<Byte>, Me
     }
 
 
-    private fun Map<T, Code>.prefixTreeOrNull(): Node<T>? {
-        fun List<Pair<Code, T>>.prefixTreeOrNull(i: Int): Node<T>? {
+    private fun Map<T, Bits>.prefixTreeOrNull(): Node<T>? {
+        fun List<Pair<Bits, T>>.prefixTreeOrNull(i: Int): Node<T>? {
             return when {
-                size == 1 && first().first.bits.size == i -> {
+                size == 1 && first().first.size == i -> {
                     Node.Leave(first().second)
                 }
-                isNotEmpty() && all { first().first.bits.size > i } -> {
-                    val (leftCodes, rightCodes) = partition { (c) -> c.bits[i] == Bit.ZERO }
+                isNotEmpty() && all { first().first.size > i } -> {
+                    val (leftCodes, rightCodes) = partition { (c) -> c[i] == Bit.ZERO }
                     val leftChild = leftCodes.takeIf { it.isNotEmpty() }?.prefixTreeOrNull(i = i + 1)
                     val rightChild = rightCodes.takeIf { it.isNotEmpty() }?.prefixTreeOrNull(i = i + 1)
                     Node.InternalNode(children = leftChild to rightChild)

@@ -1,6 +1,15 @@
 package compressor
 
-public interface Decompressor<out In : Iterable<T>, out T, in Out : Iterable<Byte>, in M> {
+/**
+ * Message decompressor.
+ *
+ * @param [T] The type of the message symbol.
+ * @param [M] The type of the [compressed message][CompressedMessage] metadata.
+ */
+public interface Decompressor<out T, in M> {
 
-    public fun decompress(compressedMessage: CompressedMessage<Out, M>): In
+    /**
+     * Decompress the given [compressed message][compressedMessage].
+     */
+    public fun decompress(compressedMessage: CompressedMessage<M>): List<T>
 }

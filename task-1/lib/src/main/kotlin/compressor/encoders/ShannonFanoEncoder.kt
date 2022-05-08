@@ -1,15 +1,24 @@
 package compressor.encoders
 
-import compressor.*
+import compressor.Encoder
+import compressor.utils.*
 import kotlin.math.abs
 
-public class ShannonFanoEncoder<T> : Encoder<T> {
+/**
+ * Shannon-Fano encoder.
+ *
+ * Encodes arbitrary message with the Shannon-Fano encoding.
+ */
+public class ShannonFanoEncoder<T : Comparable<T>> : Encoder<T> {
 
-    override fun encodeSymbolsOf(message: List<T>): Map<T, Code> {
-        val (countedSymbols, _) = message.toMessageInfo()
-        val (sortedSymbols, sortedCounters) = countedSymbols.toList().sortedByDescending { it.second }.unzip()
+    override fun encode(message: List<T>): Map<T, Bits> {
+        val (countedSymbols, _) = message.calculateMessageInfo()
+        val (sortedSymbols, sortedCounters) = countedSymbols
+            .toList()
+            .sortedWith(compareByDescending(Pair<T, Int>::second).thenComparing(Pair<T, Int>::first))
+            .unzip()
 
-        val codes = MutableList(size = countedSymbols.size) { Code.EMPTY }
+        val bits = MutableList(size = countedSymbols.size) { Bits.EMPTY }
 
         fun IntRange.encodeSubTrees() {
             val size = last - first + 1
@@ -28,7 +37,7 @@ public class ShannonFanoEncoder<T> : Encoder<T> {
 
             for ((i, half) in halves.withIndex()) {
                 for (j in half) {
-                    codes[j] = codes[j] + i.toBit()
+                    bits[j] = bits[j] + i.toBit()
                 }
                 half.encodeSubTrees()
             }
@@ -36,6 +45,6 @@ public class ShannonFanoEncoder<T> : Encoder<T> {
 
         sortedCounters.indices.encodeSubTrees()
 
-        return (sortedSymbols zip codes).toMap()
+        return (sortedSymbols zip bits).toMap()
     }
 }

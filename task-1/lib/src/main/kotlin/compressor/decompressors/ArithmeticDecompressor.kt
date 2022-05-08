@@ -1,24 +1,31 @@
 package compressor.decompressors
 
-import compressor.*
+import compressor.CompressedMessage
+import compressor.Decompressor
 import compressor.compressors.ArithmeticCompressor.Metadata
+import compressor.utils.Segment
+import compressor.utils.contains
 import java.math.BigInteger
 import java.math.RoundingMode
 import kotlin.math.ceil
 import kotlin.math.log2
 
-public class ArithmeticDecompressor<T : Comparable<T>> : Decompressor<List<T>, T, List<Byte>, Metadata<T>> {
+/**
+ * Arithmetic decompressor.
+ *
+ * Decompresses message that was compressed with [arithmetic compressor][compressor.compressors.ArithmeticCompressor].
+ */
+public class ArithmeticDecompressor<T : Comparable<T>> : Decompressor<T, Metadata<T>> {
 
-    override fun decompress(compressedMessage: CompressedMessage<List<Byte>, Metadata<T>>): List<T> {
+    override fun decompress(compressedMessage: CompressedMessage<Metadata<T>>): List<T> {
         val (_, metadata) = compressedMessage
-        val (messageInfo, _) = metadata
-        val (countedSymbols, messageLength) = messageInfo
+        val (countedSymbols, messageLength) = metadata.messageInfo
 
         val (symbols, counts) = countedSymbols.toSortedMap().toList().unzip()
         val bigIntegerCounts = counts.map(Int::toBigInteger)
         val normalizer = messageLength.toBigInteger()
 
-        val code = compressedMessage.compressed.toCode(compressedMessage.metadata.compressedBitsLength)
+        val code = compressedMessage.compressed
 
         val initSegment = Segment(BigInteger.ZERO, messageLength.toBigInteger().pow(messageLength))
 
@@ -26,7 +33,7 @@ public class ArithmeticDecompressor<T : Comparable<T>> : Decompressor<List<T>, T
             .toBigInteger(radix = 2)
             .toBigDecimal()
             .divide(
-                2.toBigDecimal().pow(code.bits.size),
+                2.toBigDecimal().pow(code.size),
                 messageLength * ceil(log2(messageLength.toDouble())).toInt(),
                 RoundingMode.HALF_EVEN
             )
@@ -50,9 +57,4 @@ public class ArithmeticDecompressor<T : Comparable<T>> : Decompressor<List<T>, T
 
         return out
     }
-
-
-    private data class Segment<T : Comparable<T>>(val l: T, val r: T)
-
-    private operator fun <T : Comparable<T>> Segment<T>.contains(element: T) = element in l..r
 }

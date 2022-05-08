@@ -3,8 +3,14 @@ package compressor.utils
 import compressor.*
 import java.util.*
 
+/**
+ * [Huffman tree][HuffmanTree] builder.
+ */
 internal class HuffmanTreeBuilder<T : Comparable<T>> {
 
+    /**
+     * Build [HuffmanTree] from [counted symbols][countedSymbols].
+     */
     fun buildTree(countedSymbols: Map<T, Int>): HuffmanTree<T> {
         if (countedSymbols.isEmpty()) return HuffmanTree(
             root = HuffmanNode(

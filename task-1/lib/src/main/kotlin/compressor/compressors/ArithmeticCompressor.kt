@@ -1,27 +1,34 @@
 package compressor.compressors
 
-import compressor.*
+import compressor.CompressedMessage
+import compressor.Compressor
 import compressor.compressors.ArithmeticCompressor.Metadata
+import compressor.utils.*
 import java.math.*
 import kotlin.math.ceil
 import kotlin.math.log2
 
-public class ArithmeticCompressor<T : Comparable<T>> : Compressor<List<T>, T, List<Byte>, Metadata<T>> {
+/**
+ * Arithmetic compressor.
+ *
+ * Compresses arbitrary message with the arithmetic compressing.
+ */
+public class ArithmeticCompressor<T : Comparable<T>> : Compressor<T, Metadata<T>> {
 
-    override fun compress(message: List<T>): CompressedMessage<List<Byte>, Metadata<T>> {
-        val messageInfo = message.toMessageInfo()
+    override fun compress(message: List<T>): CompressedMessage<Metadata<T>> {
+        val messageInfo = message.calculateMessageInfo()
         val codedSegment = getIntegerSegmentCode(message)
-        val bits = getBinCode(messageInfo.messageLength, codedSegment)
+        val bits = getBinCode(messageInfo.messageLength, codedSegment).asBits()
 
         return CompressedMessage(
-            compressed = Code(bits).toByteList(),
-            metadata = Metadata(messageInfo = messageInfo, compressedBitsLength = bits.size)
+            compressed = bits,
+            metadata = Metadata(messageInfo)
         )
     }
 
 
     private fun getIntegerSegmentCode(message: List<T>): Segment<BigInteger> {
-        val (countedSymbols, messageLength) = message.toMessageInfo()
+        val (countedSymbols, messageLength) = message.calculateMessageInfo()
 
         val (symbols, counts) = countedSymbols.toSortedMap().toList().unzip()
         val bigIntegerCounts = counts.map(Int::toBigInteger)
@@ -75,13 +82,8 @@ public class ArithmeticCompressor<T : Comparable<T>> : Compressor<List<T>, T, Li
     }
 
 
-    public data class Metadata<T>(
-        val messageInfo: MessageInfo<T>,
-        val compressedBitsLength: Int,
-    )
-
-
-    private data class Segment<T : Comparable<T>>(val l: T, val r: T)
-
-    private operator fun <T : Comparable<T>> Segment<T>.contains(element: T) = element in l..r
+    /**
+     * Metadata contains [message info][MessageInfo].
+     */
+    public data class Metadata<T>(val messageInfo: MessageInfo<T>)
 }

@@ -1,23 +1,18 @@
 package compressor
 
+import compressor.utils.Bits
+
+/**
+ * Message encoder.
+ *
+ * It encodes every message symbol with the [bit sequence][Bits].
+ *
+ * @param [T] The type of the message symbol.
+ */
 public interface Encoder<T> {
 
-    public fun encodeSymbolsOf(message: List<T>): Map<T, Code>
-
-
-    public companion object
+    /**
+     * Encode the given [message].
+     */
+    public fun encode(message: List<T>): Map<T, Bits>
 }
-
-public fun <T> Encoder<T>.encode(message: List<T>): EncodedMessage<T> =
-    Encoder.encode(message, codes = encodeSymbolsOf(message))
-
-public fun <T> Encoder.Companion.encode(message: List<T>, codes: Map<T, Code>): EncodedMessage<T> = EncodedMessage(
-    encoded = message.flatMap { codes.getValue(it).bits }.run(::Code),
-    codes = codes
-)
-
-
-public data class EncodedMessage<T>(
-    public val encoded: Code,
-    public val codes: Map<T, Code>,
-)

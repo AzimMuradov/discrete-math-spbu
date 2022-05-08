@@ -1,12 +1,16 @@
 package compressor.encoders
 
-import compressor.*
-import compressor.utils.HuffmanTreeBuilder
-import compressor.utils.buildCodes
+import compressor.Encoder
+import compressor.utils.*
 
+/**
+ * Huffman encoder.
+ *
+ * Encodes arbitrary message with the Huffman encoding.
+ */
 public class HuffmanEncoder<T : Comparable<T>> : Encoder<T> {
 
-    override fun encodeSymbolsOf(message: List<T>): Map<T, Code> = HuffmanTreeBuilder<T>()
-        .buildTree(message.toMessageInfo().countedSymbols)
+    override fun encode(message: List<T>): Map<T, Bits> = HuffmanTreeBuilder<T>()
+        .buildTree(message.calculateMessageInfo().countedSymbols)
         .buildCodes()
 }
