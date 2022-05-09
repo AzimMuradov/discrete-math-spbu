@@ -65,7 +65,7 @@ public class ArithmeticCompressor<T : Comparable<T>> : Compressor<T, Metadata<T>
             if (m !in codeSegment) {
                 val (leftSeg, rightSeg) = Segment(seg.l, m) to Segment(m, seg.r)
 
-                if (codeSegment.r in leftSeg) leftSeg else rightSeg
+                if (codeSegment.l in rightSeg) rightSeg else leftSeg
             } else {
                 null
             }

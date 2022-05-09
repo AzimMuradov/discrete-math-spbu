@@ -136,7 +136,7 @@ class CliApp : CliktCommand() {
             { runCompressorMinInfo(message, ArithmeticCompressor(), ArithmeticDecompressor()) },
             { runCompressorMinInfo(message, DynamicHuffmanCompressor(), DynamicHuffmanDecompressor()) },
             { runCompressorMinInfo(message, DynamicHuffmanWithEscCompressor(), DynamicHuffmanWithEscDecompressor()) },
-            { runCompressor(message, LzwCompressor(), LzwDecompressor()) },
+            { runCompressorMinInfo(message, LzwCompressor(), LzwDecompressor()) },
         )
     )
 
