@@ -6,10 +6,60 @@ import compressor.compressors.*
 import compressor.decompressors.*
 import compressor.encoders.*
 import compressor.utils.*
+import java.io.File
+import java.util.*
 
 class CliApp : CliktCommand() {
 
-    override fun run() {
+    override fun run() = runWithSeparators(
+        separator = ::echo5,
+        blocks = arrayOf(::runProblem1, ::runProblem2, ::runProblem3, ::runProblem4, ::runProblem5)
+    )
+
+
+    private fun runProblem1() {
+        echo("===================================PROBLEM-01===================================")
+
+        echo()
+
+        echo("{ 1,  10,   0,  01} - ❌")
+        echo("{00, 010, 011,  01} - ❌")
+        echo("{10, 010, 011,  11} - ✅")
+        echo("{ 1,  00, 010, 011} - ✅")
+    }
+
+    private fun runProblem2() {
+        echo("===================================PROBLEM-02===================================")
+
+        echo()
+
+        echo("""{00, 010, 011, 01} - ✅ -            postfix code""")
+        echo("""{ 1,  10,   0, 01} - ❌ - "10" = '1' + '0' = '10'""")
+        echo("""{10, 010, 011, 11} - ✅ -             prefix code""")
+        echo("""{01, 010, 110, 11} - ✅ -            postfix code""")
+    }
+
+    private fun runProblem3() {
+        echo("===================================PROBLEM-03===================================")
+
+        echo()
+
+        val message = "aaaaabbbcd".toList()
+
+        val averageLengthFormatted = String.format(
+            locale = Locale.ENGLISH,
+            format = "%.1f",
+            args = arrayOf(ShannonFanoEncoder<Char>().encode(message).averageLength(message))
+        )
+
+        echo(averageLengthFormatted)
+    }
+
+    private fun runProblem4() {
+        echo("===================================PROBLEM-04===================================")
+
+        echo()
+
         val messageString = listOf(
             "abcbbbbbacabbacddacdbbaccbbadadaddd",
             "abcccccbacabbacbbaddbdaccbbddadadcc",
@@ -18,82 +68,80 @@ class CliApp : CliktCommand() {
 
         echo("Message string: \"$messageString\"")
 
-        val message = messageString.toList()
+        echo()
 
-        runAllTests(
-            message = message,
+        runAlgorithms(
+            message = messageString.toList(),
             symToString = Char::toString,
+            message2 = messageString.toList().chunked(size = 2).map(::ComparableList),
             sym2ToString = { it.joinToString(separator = "", transform = Char::toString) }
         )
     }
 
+    private fun runProblem5() {
+        echo("===================================PROBLEM-05===================================")
 
-    private fun <T : Comparable<T>> runAllTests(
+        echo()
+
+        echo("File: \"src/main/resources/teapot.bmp\"")
+
+        echo()
+
+        val messageString = File("src/main/resources/teapot.bmp").readText()
+
+        runAlgorithmsMin(
+            message = messageString.toList(),
+            message2 = messageString.toList().chunked(size = 2).map(::ComparableList),
+        )
+    }
+
+
+    private fun <T : Comparable<T>> runAlgorithms(
         message: List<T>,
         symToString: (T) -> String,
+        message2: List<ComparableList<T>>,
         sym2ToString: (List<T>) -> String,
-    ) {
-        echo("Message: $message")
-        echo("Message length: ${message.count()}")
-        echo("Message entropy: ${message.entropy()}")
+    ) = runWithSeparators(
+        separator = ::echo3,
+        blocks = arrayOf(
+            { runEncoder(message, HuffmanEncoder(), symToString) },
+            { runEncoder(message, ShannonEncoder(), symToString) },
+            { runEncoder(message, ShannonFanoEncoder(), symToString) },
 
-        echo()
-        echo()
+            { runEncoder(message2, HuffmanEncoder(), sym2ToString) },
+            { runEncoder(message2, ShannonEncoder(), sym2ToString) },
+            { runEncoder(message2, ShannonFanoEncoder(), sym2ToString) },
 
-        runEncoderTests(message, symToString, sym2ToString)
-        runCompressorsTests(message)
-    }
+            { runCompressor(message, ArithmeticCompressor(), ArithmeticDecompressor()) },
+            { runCompressor(message, DynamicHuffmanCompressor(), DynamicHuffmanDecompressor()) },
+            { runCompressor(message, DynamicHuffmanWithEscCompressor(), DynamicHuffmanWithEscDecompressor()) },
+            // { runCompressor(message, LzwCompressor(), LzwDecompressor()) },
+        )
+    )
 
 
-    private fun <T : Comparable<T>> runEncoderTests(
+    private fun <T : Comparable<T>> runAlgorithmsMin(
         message: List<T>,
-        symToString: (T) -> String,
-        sym2ToString: (List<T>) -> String,
-    ) {
-        runEncoderTest(message, HuffmanEncoder(), symToString)
-        runEncoderTest(message, ShannonEncoder(), symToString)
-        runEncoderTest(message, ShannonFanoEncoder(), symToString)
-        runEncoderTest(message.chunked(size = 2).map(::ComparableList), HuffmanEncoder(), sym2ToString)
-        runEncoderTest(message.chunked(size = 2).map(::ComparableList), ShannonEncoder(), sym2ToString)
-        runEncoderTest(message.chunked(size = 2).map(::ComparableList), ShannonFanoEncoder(), sym2ToString)
-    }
+        message2: List<ComparableList<T>>,
+    ) = runWithSeparators(
+        separator = ::echo3,
+        blocks = arrayOf(
+            { runEncoderMinInfo(message, HuffmanEncoder()) },
+            { runEncoderMinInfo(message, ShannonEncoder()) },
+            { runEncoderMinInfo(message, ShannonFanoEncoder()) },
 
-    private fun <T : Comparable<T>> runCompressorsTests(message: List<T>) {
-        runCompressorTest(message, ArithmeticCompressor(), ArithmeticDecompressor())
+            { runEncoderMinInfo(message2, HuffmanEncoder()) },
+            { runEncoderMinInfo(message2, ShannonEncoder()) },
+            { runEncoderMinInfo(message2, ShannonFanoEncoder()) },
 
-        echo()
-        echo()
-        echo()
-
-        runCompressorTest(
-            message = message.chunked(size = 2).map(::ComparableList),
-            compressor = ArithmeticCompressor(),
-            decompressor = ArithmeticDecompressor()
+            { runCompressorMinInfo(message, ArithmeticCompressor(), ArithmeticDecompressor()) },
+            { runCompressorMinInfo(message, DynamicHuffmanCompressor(), DynamicHuffmanDecompressor()) },
+            { runCompressorMinInfo(message, DynamicHuffmanWithEscCompressor(), DynamicHuffmanWithEscDecompressor()) },
+            // { runCompressor(message, LzwCompressor(), LzwDecompressor()) },
         )
+    )
 
-        echo()
-        echo()
-        echo()
-
-        runCompressorTest(
-            message = message,
-            compressor = DynamicHuffmanCompressor(),
-            decompressor = DynamicHuffmanDecompressor()
-        )
-
-        echo()
-        echo()
-        echo()
-
-        runCompressorTest(
-            message = message,
-            compressor = DynamicHuffmanWithEscCompressor(),
-            decompressor = DynamicHuffmanWithEscDecompressor()
-        )
-    }
-
-
-    private fun <T> runEncoderTest(
+    private fun <T> runEncoder(
         message: List<T>,
         encoder: Encoder<T>,
         symToString: (T) -> String,
@@ -104,39 +152,82 @@ class CliApp : CliktCommand() {
         echo("Codes:")
         echo(codes.toList().joinToString(separator = "\n") { (s, c) -> "'${symToString(s)}' - $c" })
 
+        echo("Message: $message")
+        echo("Message length: ${message.count()}")
+        echo("Message entropy: ${message.entropy()}")
         echo("Code average length: ${codes.averageLength(message)}")
         echo("Code redundancy: ${codes.redundancy(message)}")
 
         echo()
 
-        runCompressorTest(
-            message = message,
-            compressor = EncoderBasedCompressor(encoder),
-            decompressor = PrefixTreeDecompressor()
-        )
-
-        echo()
-        echo()
-        echo()
+        runCompressor(message, EncoderBasedCompressor(encoder), PrefixTreeDecompressor())
     }
 
-    private fun <T, M> runCompressorTest(
+    private fun <T, M> runCompressor(
         message: List<T>,
         compressor: Compressor<T, M>,
-        decompressor: Decompressor<T, M>? = null,
+        decompressor: Decompressor<T, M>,
     ) {
         val (compressed, metadata) = compressor.compress(message)
 
         echo("Compressor: ${compressor::class.simpleName}")
-        echo("Compressed: $compressed")
-        echo("Compressed in UTF-8: ${compressed.toByteArray().decodeToString()}")
+        echo("Compressed in bits: $compressed")
         echo("Compressed metadata: $metadata")
+        echo("Compressed in bits length: ${compressed.size}")
+        echo("Compressed in bytes length: ${compressed.toByteArray().size}")
 
-        if (decompressor != null) {
-            echo()
+        echo()
 
-            echo("Decompressor: ${decompressor::class.simpleName}")
-            echo("Decompressed: ${decompressor.decompress(CompressedMessage(compressed, metadata))}")
+        echo("Decompressor: ${decompressor::class.simpleName}")
+        echo("Decompressor status: ${decompressor.decompress(CompressedMessage(compressed, metadata)) == message}")
+    }
+
+    private fun <T> runEncoderMinInfo(
+        message: List<T>,
+        encoder: Encoder<T>,
+    ) {
+        val codes = encoder.encode(message)
+
+        echo("Encoder: ${encoder::class.simpleName}")
+        echo("Message length: ${message.count()}")
+        echo("Message entropy: ${message.entropy()}")
+        echo("Code average length: ${codes.averageLength(message)}")
+        echo("Code redundancy: ${codes.redundancy(message)}")
+
+        echo()
+
+        runCompressorMinInfo(message, EncoderBasedCompressor(encoder), PrefixTreeDecompressor())
+    }
+
+    private fun <T, M> runCompressorMinInfo(
+        message: List<T>,
+        compressor: Compressor<T, M>,
+        decompressor: Decompressor<T, M>,
+    ) {
+        val (compressed, metadata) = compressor.compress(message)
+
+        echo("Compressor: ${compressor::class.simpleName}")
+        echo("Compressed in bits length: ${compressed.size}")
+        echo("Compressed in bytes length: ${compressed.toByteArray().size}")
+
+        echo()
+
+        echo("Decompressor: ${decompressor::class.simpleName}")
+        echo("Decompressor status: ${decompressor.decompress(CompressedMessage(compressed, metadata)) == message}")
+    }
+
+
+    private fun runWithSeparators(separator: () -> Unit, vararg blocks: () -> Unit) {
+        if (blocks.isNotEmpty()) {
+            blocks.first()()
+            for (block in blocks.drop(n = 1)) {
+                separator()
+                block()
+            }
         }
     }
+
+    private fun echo3() = repeat(times = 3) { echo() }
+
+    private fun echo5() = repeat(times = 5) { echo() }
 }
