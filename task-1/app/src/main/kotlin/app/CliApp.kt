@@ -115,10 +115,9 @@ class CliApp : CliktCommand() {
             { runCompressor(message, ArithmeticCompressor(), ArithmeticDecompressor()) },
             { runCompressor(message, DynamicHuffmanCompressor(), DynamicHuffmanDecompressor()) },
             { runCompressor(message, DynamicHuffmanWithEscCompressor(), DynamicHuffmanWithEscDecompressor()) },
-            // { runCompressor(message, LzwCompressor(), LzwDecompressor()) },
+            { runCompressor(message, LzwCompressor(), LzwDecompressor()) },
         )
     )
-
 
     private fun <T : Comparable<T>> runAlgorithmsMin(
         message: List<T>,
@@ -137,7 +136,7 @@ class CliApp : CliktCommand() {
             { runCompressorMinInfo(message, ArithmeticCompressor(), ArithmeticDecompressor()) },
             { runCompressorMinInfo(message, DynamicHuffmanCompressor(), DynamicHuffmanDecompressor()) },
             { runCompressorMinInfo(message, DynamicHuffmanWithEscCompressor(), DynamicHuffmanWithEscDecompressor()) },
-            // { runCompressor(message, LzwCompressor(), LzwDecompressor()) },
+            { runCompressor(message, LzwCompressor(), LzwDecompressor()) },
         )
     )
 
