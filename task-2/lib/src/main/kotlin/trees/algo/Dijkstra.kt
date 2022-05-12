@@ -2,42 +2,41 @@
 
 package trees.algo
 
+import trees.structures.PosEdge
 import trees.structures.PosGraph
 import java.util.*
 
 /**
  * Dijkstra's Algorithm.
  */
-public fun <V> PosGraph<V>.shortestPathLength(from: V, to: V): ULong? {
+public fun <V> PosGraph<V>.shortestPath(from: V, to: V): List<PosEdge<V>>? {
     val vList = vertices.toList()
     val distTo = ULongArray(vertices.size) { ULong.MAX_VALUE }
 
-    val minPQ = PriorityQueue<Pair<V, ULong>>(vertices.size) { p1, p2 ->
+    val minPQ = PriorityQueue<Triple<V, List<PosEdge<V>>, ULong>>(vertices.size) { p1, p2 ->
         when {
-            p1.second < p2.second -> -1
-            p1.second > p2.second -> 1
+            p1.third < p2.third -> -1
+            p1.third > p2.third -> 1
             else -> 0
         }
     }
     for (v in vertices) {
-        minPQ += v to ULong.MAX_VALUE
+        minPQ += Triple(v, emptyList(), ULong.MAX_VALUE)
     }
 
-    minPQ += from to 0UL
+    minPQ += Triple(from, emptyList(), 0UL)
 
     while (true) {
-        val (v, distToV) = minPQ.poll()
+        val (v, path, distToV) = minPQ.poll()
 
         if (distToV == ULong.MAX_VALUE) break
         if (distTo[vList.indexOf(v)] != ULong.MAX_VALUE) continue
-        if (v == to) return distToV
+        if (v == to) return path
 
         distTo[vList.indexOf(v)] = distToV
 
-        if (v in adjList.keys) {
-            for ((u, weight) in adjList.getValue(v)) {
-                minPQ += u to distToV + weight
-            }
+        for ((u, weight) in adjList.getValue(v)) {
+            minPQ += Triple(u, path + PosEdge(v, u, weight), distToV + weight)
         }
     }
 
