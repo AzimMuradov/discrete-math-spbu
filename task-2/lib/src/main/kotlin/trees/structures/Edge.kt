@@ -12,7 +12,7 @@ public interface Edge<out V, out E : Edge<V, E, EE>, out EE : EdgeEnd<V, E, EE>>
     public operator fun component2(): V
 
 
-    public fun rotate(): E
+    public fun swap(): E
 
     public fun edgeEnd(): EE
 }

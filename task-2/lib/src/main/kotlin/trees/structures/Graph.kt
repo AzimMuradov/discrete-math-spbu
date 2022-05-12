@@ -34,7 +34,7 @@ public class Graph<V, out E : Edge<V, E, EE>, out EE : EdgeEnd<V, E, EE>> privat
             edges: Set<E>,
         ): Graph<V, E, EE> {
             require(edges.all { (v, u) -> v in vertices && u in vertices }) { "ERROR" }
-            val allEdges = edges + edges.map { it.rotate() }
+            val allEdges = edges + edges.map { it.swap() }
             val adjList = allEdges.groupBy(
                 keySelector = { it.from },
                 valueTransform = { it.edgeEnd() }

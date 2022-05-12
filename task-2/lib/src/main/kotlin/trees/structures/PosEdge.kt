@@ -5,7 +5,7 @@ public data class PosEdge<out V>(
     val weight: UInt,
 ) : Edge<V, PosEdge<V>, PosEdgeEnd<V>> {
 
-    override fun rotate(): PosEdge<V> = copy(from = to, to = from)
+    override fun swap(): PosEdge<V> = copy(from = to, to = from)
 
     override fun edgeEnd(): PosEdgeEnd<V> = PosEdgeEnd(to, weight)
 }

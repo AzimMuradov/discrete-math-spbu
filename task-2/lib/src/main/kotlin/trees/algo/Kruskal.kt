@@ -10,7 +10,6 @@ public fun <V> PosGraph<V>.kruskalMstForest(): PosGraph<V> {
     val sortedEdges = edges.sortedWith { e1, e2 -> e1.weight.compareTo(e2.weight) }
 
     val mstForestEdges = mutableSetOf<PosEdge<V>>()
-    var edgeCnt = 0
 
     val ds = DisjointSets(vertices)
 
@@ -19,7 +18,6 @@ public fun <V> PosGraph<V>.kruskalMstForest(): PosGraph<V> {
 
         if (ds.find(v) != ds.find(u)) {
             mstForestEdges += edge
-            edgeCnt += 1
             ds.union(v, u)
         }
     }
