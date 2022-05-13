@@ -4,9 +4,7 @@ import trees.structures.*
 
 public object GraphIO {
 
-    public fun <V> readPosEdgeGraphOrNull(
-        parseT: (String) -> V?,
-    ): Graph<V, PosEdge<V>, PosEdgeEnd<V>>? {
+    public fun <V> readPosGraphOrNull(parseT: (String) -> V?): PosGraph<V>? {
         val (n, m) = readLineOfInts()?.takeIf { it.size >= 2 } ?: return null
 
         val vertices: Set<V> = readLineOfWords()?.mapTo(mutableSetOf()) {
