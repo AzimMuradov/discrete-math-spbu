@@ -25,4 +25,4 @@ jobs:
       - name: "Grant execute permission for gradlew"
         run: chmod +x gradlew
       - name: "Run project app with Gradle"
-        run: ./gradlew :app:run --info
+        run: ./gradlew :app:run --args="auto" --info
