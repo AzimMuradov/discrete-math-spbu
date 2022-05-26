@@ -68,8 +68,8 @@ class CliApp : CliktCommand() {
             tree?.let {
                 val tMsg = it.edges
                     .filter { (from, to) -> from <= to }
-                    .joinToString(separator = "\n") { (from, to, w) -> "($from)--$w--($to)" } + "."
-                val tWeightMsg = "Weight: ${it.edges.sumOf(PosEdge<Char>::weight)}."
+                    .joinToString(separator = "\n") { (from, to, w) -> "($from)--$w--($to)" }
+                val tWeightMsg = "Weight: ${it.edges.sumOf(PosEdge<Char>::weight) / 2u}."
                 "\n\n$tMsg\n\n$tWeightMsg"
             } ?: " no MST."
         )
@@ -79,7 +79,7 @@ class CliApp : CliktCommand() {
         append("Shortest path (Dijkstra):")
         append(
             path?.let {
-                val pMsg = "(${it.joinToString(separator = "") { (fr, _, w) -> "$fr)--$w--(" }}${it.last().to})."
+                val pMsg = "(${it.joinToString(separator = "") { (fr, _, w) -> "$fr)--$w--(" }}${it.last().to})"
                 val pLenMsg = "Length: ${it.sumOf(PosEdge<Char>::weight)}."
                 "\n\n$pMsg\n\n$pLenMsg"
             } ?: " no path."
