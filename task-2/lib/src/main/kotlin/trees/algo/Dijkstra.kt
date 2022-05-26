@@ -13,17 +13,14 @@ public fun <V> PosGraph<V>.shortestPath(from: V, to: V): List<PosEdge<V>>? {
     val vList = vertices.toList()
     val distTo = ULongArray(vertices.size) { ULong.MAX_VALUE }
 
-    val minPQ = PriorityQueue<Triple<V, List<PosEdge<V>>, ULong>>(vertices.size) { p1, p2 ->
-        when {
-            p1.third < p2.third -> -1
-            p1.third > p2.third -> 1
-            else -> 0
-        }
-    }
+    val minPQ = PriorityQueue<Triple<V, List<PosEdge<V>>, ULong>>(
+        vertices.size,
+        Comparator.comparing { it.third }
+    )
+
     for (v in vertices) {
         minPQ += Triple(v, emptyList(), ULong.MAX_VALUE)
     }
-
     minPQ += Triple(from, emptyList(), 0UL)
 
     while (true) {

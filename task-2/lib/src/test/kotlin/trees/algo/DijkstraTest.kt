@@ -10,43 +10,43 @@ internal class DijkstraTest {
     @Test
     fun test() {
         assertEquals(
-            expected = graph(
+            expected = listOf(
+                edge(from = 'a', to = 'b', weight = 2u),
+                edge(from = 'b', to = 'c', weight = 3u),
+                edge(from = 'c', to = 'e', weight = 1u),
+                edge(from = 'e', to = 'z', weight = 2u),
+            ),
+            actual = graph(
                 setOf('a', 'b', 'c', 'd', 'e', 'z'),
                 setOf(
-                    edge('a', 'b', 2u),
-                    edge('a', 'd', 1u),
-                    edge('b', 'c', 3u),
-                    edge('c', 'd', 5u),
-                    edge('c', 'e', 1u),
-                    edge('c', 'z', 8u),
-                    edge('d', 'e', 10u),
-                    edge('e', 'z', 2u),
+                    edge(from = 'a', to = 'b', weight = 2u),
+                    edge(from = 'a', to = 'd', weight = 1u),
+                    edge(from = 'b', to = 'c', weight = 3u),
+                    edge(from = 'c', to = 'd', weight = 5u),
+                    edge(from = 'c', to = 'e', weight = 1u),
+                    edge(from = 'c', to = 'z', weight = 8u),
+                    edge(from = 'd', to = 'e', weight = 10u),
+                    edge(from = 'e', to = 'z', weight = 2u),
                 )
-            ).shortestPath('a', 'z'),
-            actual = listOf(
-                edge('a', 'b', 2u),
-                edge('b', 'c', 3u),
-                edge('c', 'e', 1u),
-                edge('e', 'z', 2u),
-            )
+            ).shortestPath('a', 'z')
         )
     }
 
     @Test
     fun `test failed`() {
         assertEquals(
-            expected = graph(
+            expected = null,
+            actual = graph(
                 setOf('a', 'b', 'c', 'd', 'e', 'z'),
                 setOf(
-                    edge('a', 'b', 2u),
-                    edge('a', 'd', 1u),
-                    edge('b', 'c', 3u),
-                    edge('c', 'd', 5u),
-                    edge('c', 'e', 1u),
-                    edge('d', 'e', 10u),
+                    edge(from = 'a', to = 'b', weight = 2u),
+                    edge(from = 'a', to = 'd', weight = 1u),
+                    edge(from = 'b', to = 'c', weight = 3u),
+                    edge(from = 'c', to = 'd', weight = 5u),
+                    edge(from = 'c', to = 'e', weight = 1u),
+                    edge(from = 'd', to = 'e', weight = 10u),
                 )
-            ).shortestPath('a', 'z'),
-            actual = null
+            ).shortestPath('a', 'z')
         )
     }
 }
