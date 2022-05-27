@@ -28,6 +28,6 @@ tasks.test {
     useJUnitPlatform()
 }
 
-//tasks.koverMergedHtmlReport {
-//    includes = listOf("trees.algo.*", "trees.utils.DisjointSet*")
-//}
+tasks.koverMergedHtmlReport {
+    includes = listOf("flows.algo.*")
+}
