@@ -28,11 +28,13 @@ private inline fun <V> Network<V>.dfsOrBfs(
 ): Sequence<Pair<V, V>> {
     val parents: MutableMap<V, V?> = graph.vertices.associateWithTo(mutableMapOf()) { null }
 
-    val isVisited = graph.vertices.associateWithTo(mutableMapOf()) { false }
-    val deque = ArrayDeque<V>()
+    val isVisited = graph.vertices.associateWithTo(mutableMapOf()) { false }.apply {
+        set(source, true)
+    }
 
-    isVisited[source] = true
-    deque.add(source)
+    val deque = ArrayDeque<V>().apply {
+        add(source)
+    }
 
     while (deque.isNotEmpty()) {
         val v = popOp(deque)

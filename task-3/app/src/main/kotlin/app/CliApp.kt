@@ -4,8 +4,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.default
 import com.github.ajalt.clikt.parameters.types.choice
-import flows.algo.calculateEdmondsKarpMaxflow
-import flows.algo.calculateFordFulkersonMaxflow
+import flows.algo.*
 import flows.structures.*
 import flows.utils.GraphIO
 
@@ -151,6 +150,8 @@ class CliApp : CliktCommand() {
     private val algorithms = listOf(
         "Ford-Fulkerson" to Network<Int>::calculateFordFulkersonMaxflow,
         "Edmonds-Karp" to Network<Int>::calculateEdmondsKarpMaxflow,
+        "Dinitz" to Network<Int>::calculateDinitzMaxflow,
+        "Scaling" to Network<Int>::calculateMaxflowByScaling,
     )
 
 
