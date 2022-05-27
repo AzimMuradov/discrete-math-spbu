@@ -24,29 +24,21 @@ public fun <V> Network<V>.calculateDinitzMaxflow(): UInt {
     val depths = graph.vertices.associateWithTo(mutableMapOf()) { UInt.MAX_VALUE }
 
 
-    while (bfs(residualNetworkCapacities, depths)) {
+    fun bfs() = bfs(residualNetworkCapacities, depths)
+
+    fun dfs(pointers: MutableMap<V, V?>) = dfs(
+        residualNetworkCapacities,
+        depths,
+        verticesList, verticesIndexed, pointers,
+        source, UInt.MAX_VALUE
+    )
+
+
+    while (bfs()) {
         val pointers: MutableMap<V, V?> = graph.vertices.associateWithTo(mutableMapOf()) { graph.vertices.first() }
 
-        maxflow += generateSequence(
-            seed = dfs(
-                residualNetworkCapacities,
-                depths,
-                verticesList,
-                verticesIndexed,
-                pointers,
-                source,
-                UInt.MAX_VALUE
-            )
-        ) {
-            dfs(
-                residualNetworkCapacities,
-                depths,
-                verticesList,
-                verticesIndexed,
-                pointers,
-                source,
-                UInt.MAX_VALUE
-            ).takeUnless { it == 0u }
+        maxflow += generateSequence(seed = dfs(pointers)) {
+            dfs(pointers).takeUnless { it == 0u }
         }.sum()
     }
 
@@ -68,7 +60,7 @@ private fun <V> Network<V>.bfs(
     while (deque.isNotEmpty()) {
         val v = deque.removeFirst()
         for ((u, cap) in residualNetworkCapacities[v]) {
-            if (depths[u] == UInt.MAX_VALUE && cap != 0u) {
+            if (depths.getValue(u) == UInt.MAX_VALUE && cap != 0u) {
                 depths[u] = depths.getValue(v) + 1u
                 deque.add(u)
             }
@@ -91,7 +83,7 @@ private fun <V> Network<V>.dfs(
 
     if (pointers[u] != null) {
         for (v in verticesList.subList(verticesIndexed.getValue(pointers[u]!!), verticesList.size)) {
-            if (depth[v] == depth[u]!! + 1u) {
+            if (depth.getValue(v) == depth.getValue(u) + 1u) {
                 val delta = dfs(
                     residualNetworkCapacities,
                     depth,
@@ -103,11 +95,11 @@ private fun <V> Network<V>.dfs(
                 )
                 if (delta != 0u) {
                     residualNetworkCapacities[u, v] -= delta
-                    residualNetworkCapacities[v, u] += delta // насыщаем рёбра по пути dfs
+                    residualNetworkCapacities[v, u] += delta
                     return delta
                 }
             }
-            pointers[u] = verticesList.getOrNull(verticesIndexed[pointers[u]!!]!! + 1)
+            pointers[u] = verticesList.getOrNull(verticesIndexed[pointers.getValue(u)]!! + 1)
         }
     }
     return 0u

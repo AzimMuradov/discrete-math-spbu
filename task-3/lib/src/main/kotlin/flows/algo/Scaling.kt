@@ -5,7 +5,7 @@ import flows.structures.Network
 import kotlin.math.*
 
 /**
- * TODO
+ * The Flow Scaling Algorithm.
  */
 public fun <V> Network<V>.calculateMaxflowByScaling(): UInt {
     var maxflow = 0u
