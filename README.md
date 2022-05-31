@@ -15,7 +15,7 @@ Repository of homework in the discipline "Discrete Mathematics".
 [![Run project](https://github.com/AzimMuradov/discrete-math-spbu/actions/workflows/task-2-run.yml/badge.svg)](https://github.com/AzimMuradov/discrete-math-spbu/actions/workflows/task-2-run.yml)
 
 
-[Task \#3](https://github.com/AzimMuradov/discrete-math-spbu/pull/4) - Flows
+[Task \#3](https://github.com/AzimMuradov/discrete-math-spbu/tree/master/task-3) - Flows
 
 [![Build and check project](https://github.com/AzimMuradov/discrete-math-spbu/actions/workflows/task-3-check.yml/badge.svg)](https://github.com/AzimMuradov/discrete-math-spbu/actions/workflows/task-3-check.yml)
 [![Run project](https://github.com/AzimMuradov/discrete-math-spbu/actions/workflows/task-3-run.yml/badge.svg)](https://github.com/AzimMuradov/discrete-math-spbu/actions/workflows/task-3-run.yml)
