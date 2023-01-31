@@ -1,4 +1,4 @@
-# Discrete Mathematics - SPBU
+# Discrete Mathematics - SPbU
 
 Repository of homework in the discipline "Discrete Mathematics".
 
