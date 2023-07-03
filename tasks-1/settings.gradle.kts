@@ -1,4 +1,4 @@
-rootProject.name = "Compressors"
+rootProject.name = "Encoders"
 
 include(":app")
 include(":lib")

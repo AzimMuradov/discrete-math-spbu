@@ -1,4 +1,4 @@
-rootProject.name = "Trees"
+rootProject.name = "Graphs"
 
 include(":app")
 include(":lib")

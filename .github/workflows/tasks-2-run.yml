@@ -1,20 +1,20 @@
-name: "Run project"
+name: "Run tasks #2"
 
 on:
   workflow_dispatch:
   push:
     branches: [ master ]
-    paths: [ "task-1/**" ]
+    paths: [ "tasks-2/**" ]
   pull_request:
     branches: [ master ]
-    paths: [ "task-1/**" ]
+    paths: [ "tasks-2/**" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: task-1
+        working-directory: tasks-2
     steps:
       - uses: actions/checkout@v2
       - name: "Set up JDK 11"
@@ -25,4 +25,4 @@ jobs:
       - name: "Grant execute permission for gradlew"
         run: chmod +x gradlew
       - name: "Run project app with Gradle"
-        run: ./gradlew :app:run --info
+        run: ./gradlew :app:run --args="auto" --info

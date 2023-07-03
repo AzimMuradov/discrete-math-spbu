@@ -1,20 +1,20 @@
-name: "Build and check project"
+name: "Run tasks #3"
 
 on:
   workflow_dispatch:
   push:
     branches: [ master ]
-    paths: [ "task-2/**" ]
+    paths: [ "tasks-3/**" ]
   pull_request:
     branches: [ master ]
-    paths: [ "task-2/**" ]
+    paths: [ "tasks-3/**" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: task-2
+        working-directory: tasks-3
     steps:
       - uses: actions/checkout@v2
       - name: "Set up JDK 11"
@@ -24,10 +24,5 @@ jobs:
           distribution: "adopt"
       - name: "Grant execute permission for gradlew"
         run: chmod +x gradlew
-      - name: "Check project library with Gradle"
-        run: ./gradlew :lib:check --info
-      - name: "Upload test reports as an action artifact"
-        uses: actions/upload-artifact@v2
-        with:
-          name: kover-test-reports
-          path: task-2/lib/build/reports/kover/html
+      - name: "Run project app with Gradle"
+        run: ./gradlew :app:run --args="auto" --info

@@ -1,20 +1,20 @@
-name: "Build and check project"
+name: "Build and check tasks #3"
 
 on:
   workflow_dispatch:
   push:
     branches: [ master ]
-    paths: [ "task-1/**" ]
+    paths: [ "tasks-3/**" ]
   pull_request:
     branches: [ master ]
-    paths: [ "task-1/**" ]
+    paths: [ "tasks-3/**" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: task-1
+        working-directory: tasks-3
     steps:
       - uses: actions/checkout@v2
       - name: "Set up JDK 11"
@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: kover-test-reports
-          path: task-1/lib/build/reports/kover/html
+          path: tasks-3/lib/build/reports/kover/html
